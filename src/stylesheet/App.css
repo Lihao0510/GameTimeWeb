@@ -1,0 +1,28 @@
+@import "../../node_modules/antd/dist/antd.css";
+
+.App {
+    display: flex;
+    flex: 1;
+}
+
+.Content {
+    display: flex;
+    flex: 1;
+}
+
+.header-spacer {
+    display: flex;
+    flex: 1;
+}
+
+.header-icon {
+    width: 24px;
+    margin-right: 12px;
+}
+
+.Header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}

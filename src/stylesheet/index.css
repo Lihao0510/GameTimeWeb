@@ -1,0 +1,10 @@
+body {
+    display: flex;
+    flex: 1;
+    font-family: sans-serif;
+}
+
+#root {
+    display: flex;
+    flex: 1;
+}
