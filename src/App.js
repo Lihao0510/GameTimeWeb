@@ -4,9 +4,54 @@ import {Layout, Menu, Breadcrumb, Icon, Button} from 'antd';
 import {connect} from 'react-redux';
 const {SubMenu} = Menu;
 const {Header, Content, Sider} = Layout;
+const ButtonGroup = Button.Group;
 import manageIcon from './image/icon_manage.png';
+import Urls from './util/UrlList'
+import NewsPage from './page/NewsPage';
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        let userphone = window.usermessage;
+        this.state = {
+            userphone: userphone
+        }
+        this.getUserMessage(userphone);
+    }
+
+    getUserMessage(userphone) {
+        fetch(Urls.baseUrl + 'sys/users/getbyphone/' + userphone, {method: 'GET', credentials: 'include'})
+            .then((result) => {
+                return result.json();
+            })
+            .then((data) => {
+                if (data.status === 1) {
+                    //获取data.user
+                    console.log(data.user)
+                }
+            })
+            .catch((error) => {
+                console.log('error:' + error.toString());
+            });
+    }
+
+    doLogout() {
+        fetch(Urls.baseUrl + 'sys/login/logout', {method: 'GET', credentials: 'include'})
+            .then((result) => {
+                return result.json();
+            })
+            .then((data) => {
+                if (data.status === 1) {
+                    window.location.href = '/';
+                }
+            })
+            .catch((error) => {
+                console.log('error:' + error.toString());
+            });
+    }
+
+
     render() {
         return (
             <div className="App">
@@ -17,18 +62,18 @@ class App extends Component {
                         <img src={manageIcon} alt="GameTime后台管理" className="header-icon"/>
                         <h2><font color="white">GameTime后台管理</font></h2>
                         <div className="header-spacer"></div>
-                        <Menu
-                            theme="dark"
-                            mode="horizontal"
-                            defaultSelectedKeys={['1']}
-                            style={{
-                                lineHeight: '64px',
-                            }}
+                        <h4><font color="white">欢迎您 {this.state.userphone}</font></h4>
+                        <ButtonGroup
+                            style={
+                                {
+                                    marginLeft: 20
+                                }
+                            }
                         >
-                            <Menu.Item key="1">保存</Menu.Item>
-                            <Menu.Item key="2">退出</Menu.Item>
-                            <Menu.Item key="3">设置</Menu.Item>
-                        </Menu>
+                            <Button type="default" icon="user" onClick={() => {
+                            }}><b> 我的信息</b></Button>
+                            <Button type="default" icon="poweroff" onClick={this.doLogout}><b> 退出系统</b></Button>
+                        </ButtonGroup>
                     </Header>
                     <Layout>
                         <Sider width={200} style={{background: '#fff'}}>
@@ -67,14 +112,8 @@ class App extends Component {
                                 <Breadcrumb.Item>论坛管理</Breadcrumb.Item>
                                 <Breadcrumb.Item>LOL论坛</Breadcrumb.Item>
                             </Breadcrumb>
-                            <Content style={{background: '#fff', padding: 12, margin: 0, minHeight: 280}}>
-                                欢迎来到LOL论坛
-                                <Button
-                                    type="primary"
-                                    style={{
-                                        marginLeft: 15
-                                    }}
-                                >确定</Button>
+                            <Content style={{background: '#fff', margin: 0, minHeight: 280}}>
+                                <NewsPage/>
                             </Content>
                         </Layout>
                     </Layout>

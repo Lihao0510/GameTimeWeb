@@ -1,0 +1,12 @@
+.NewsPageLayout {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background-color: #9fd2f6;
+    justify-content: space-between;
+}
+
+.NewsTable {
+    height: 100%;
+    width: 100%;
+}
