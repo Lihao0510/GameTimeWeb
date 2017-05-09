@@ -10,3 +10,10 @@
     height: 100%;
     width: 100%;
 }
+
+.NewsPageButtonContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    justify-content: flex-start;
+}

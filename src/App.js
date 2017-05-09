@@ -15,9 +15,9 @@ class App extends Component {
         super(props);
         let userphone = window.usermessage;
         this.state = {
-            userphone: userphone
+            userphone: userphone || '17786123214'
         }
-        this.getUserMessage(userphone);
+        this.getUserMessage(this.state.userphone);
     }
 
     getUserMessage(userphone) {
