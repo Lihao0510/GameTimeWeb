@@ -3,11 +3,11 @@ import './stylesheet/App.css';
 import {Layout, Menu, Breadcrumb, Icon, Button} from 'antd';
 import {connect} from 'react-redux';
 const {SubMenu} = Menu;
+import { Link } from 'react-router';
 const {Header, Content, Sider} = Layout;
 const ButtonGroup = Button.Group;
 import manageIcon from './image/icon_manage.png';
 import Urls from './util/UrlList'
-import NewsPage from './page/NewsPage';
 
 class App extends Component {
 
@@ -79,41 +79,41 @@ class App extends Component {
                         <Sider width={200} style={{background: '#fff'}}>
                             <Menu
                                 mode="inline"
-                                defaultSelectedKeys={['1']}
-                                defaultOpenKeys={['sub1']}
+                                defaultSelectedKeys={['weixin']}
+                                defaultOpenKeys={['news']}
                                 style={{height: '100%'}}
                             >
-                                <SubMenu key="sub1" title={<span><Icon type="laptop"/><b>新闻管理</b></span>}>
-                                    <Menu.Item key="1">微信新闻</Menu.Item>
-                                    <Menu.Item key="2">本地新闻</Menu.Item>
-                                    <Menu.Item key="3">图片管理</Menu.Item>
+                                <SubMenu key="news" title={<span><Icon type="laptop"/><b>新闻管理</b></span>}>
+                                    <Menu.Item key="weixin"><Link to={'/app/news/weixin'}>微信新闻</Link></Menu.Item>
+                                    <Menu.Item key="local"><Link to={'/app/news/local'}>本地新闻</Link></Menu.Item>
+                                    <Menu.Item key="picture"><Link to={'/app/news/picture'}>图片管理</Link></Menu.Item>
                                 </SubMenu>
-                                <SubMenu key="sub2" title={<span><Icon type="appstore-o"/><b>论坛管理</b></span>}>
-                                    <Menu.Item key="5">LOL板块</Menu.Item>
-                                    <Menu.Item key="6">Dota板块</Menu.Item>
-                                    <Menu.Item key="7">炉石板块</Menu.Item>
-                                    <Menu.Item key="8">王者荣耀板块</Menu.Item>
+                                <SubMenu key="forum" title={<span><Icon type="appstore-o"/><b>论坛管理</b></span>}>
+                                    <Menu.Item key="lol"><Link to={'/app/forum/lol'}>LOL板块</Link></Menu.Item>
+                                    <Menu.Item key="dota"><Link to={'/app/forum/dota'}>Dota板块</Link></Menu.Item>
+                                    <Menu.Item key="stone"><Link to={'/app/forum/stone'}>炉石板块</Link></Menu.Item>
+                                    <Menu.Item key="nongyao"><Link to={'/app/forum/nongyao'}>王者荣耀板块</Link></Menu.Item>
                                 </SubMenu>
-                                <SubMenu key="sub3" title={<span><Icon type="user"/><b>用户管理</b></span>}>
-                                    <Menu.Item key="9">系统用户</Menu.Item>
-                                    <Menu.Item key="10">App用户</Menu.Item>
-                                    <Menu.Item key="11">权限设置</Menu.Item>
+                                <SubMenu key="user" title={<span><Icon type="user"/><b>用户管理</b></span>}>
+                                    <Menu.Item key="sys"><Link to={'/app/user/sys'}>系统用户</Link></Menu.Item>
+                                    <Menu.Item key="app"><Link to={'/app/user/app'}>App用户</Link></Menu.Item>
+                                    <Menu.Item key="authority"><Link to={'/app/user/authority'}>权限设置</Link></Menu.Item>
                                 </SubMenu>
-                                <SubMenu key="sub4" title={<span><Icon type="setting"/><b>系统管理</b></span>}>
-                                    <Menu.Item key="12">爬虫管理</Menu.Item>
-                                    <Menu.Item key="13">邮件管理</Menu.Item>
-                                    <Menu.Item key="14">板块管理</Menu.Item>
-                                    <Menu.Item key="15">系统设置</Menu.Item>
+                                <SubMenu key="system" title={<span><Icon type="setting"/><b>系统管理</b></span>}>
+                                    <Menu.Item key="crawler"><Link to={'/app/system/crawler'}>爬虫管理</Link></Menu.Item>
+                                    <Menu.Item key="mail"><Link to={'/app/system/mail'}>邮件管理</Link></Menu.Item>
+                                    <Menu.Item key="plate"><Link to={'/app/system/plate'}>板块管理</Link></Menu.Item>
+                                    <Menu.Item key="setting"><Link to={'/app/system/setting'}>系统设置</Link></Menu.Item>
                                 </SubMenu>
                             </Menu>
                         </Sider>
-                        <Layout style={{padding: '0 12px 12px', minWidth: 1080}}>
+                        <Layout style={{padding: '0 12px 12px', minWidth: 750}}>
                             <Breadcrumb style={{margin: '12px 0'}}>
                                 <Breadcrumb.Item>论坛管理</Breadcrumb.Item>
                                 <Breadcrumb.Item>LOL论坛</Breadcrumb.Item>
                             </Breadcrumb>
-                            <Content style={{background: '#fff', margin: 0, minHeight: 280}}>
-                                <NewsPage/>
+                            <Content style={{background: '#fff', margin: 0, minHeight: 700}}>
+                                {this.props.children}
                             </Content>
                         </Layout>
                     </Layout>
