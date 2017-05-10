@@ -205,7 +205,7 @@ class NewsPage extends Component {
                         marginRight: 15
                     }} onClick={this.openAlert}>发布</Button>
                 </div>
-                <Table columns={columns} dataSource={data} className="NewsTable"/>
+                <Table columns={columns} dataSource={data} style={{ height: '100%'}}/>
                 <Modal title="新闻操作"
                        visible={this.state.modalVisible}
                        onOk={this.handleOK}
