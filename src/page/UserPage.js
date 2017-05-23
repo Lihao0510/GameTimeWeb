@@ -12,45 +12,33 @@ import '../stylesheet/NewsPage.css';
 import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
 import NewsInput from '../component/NewsInput';
-import {openWindow} from '../redux/action/InputWindowAction'
+import {openWindow} from '../redux/action/InputWindowAction';
+import Urls from '../util/UrlList';
+
 notification.config({
     placement: 'bottomRight',
 });
 
 const columns = [{
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => <a href="#">{text}</a>,
+    title: '用户ID',
+    dataIndex: 'user_id',
+    key: 'user_id',
 }, {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: '用户手机',
+    dataIndex: 'user_phone',
+    key: 'user_phone',
 }, {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: '用户等级',
+    dataIndex: 'user_type',
+    key: 'user_type',
 }, {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-        <span>
-      <a href="#">Action 一 {record.name}</a>
-      <span className="ant-divider"/>
-      <a href="#">Delete</a>
-      <span className="ant-divider"/>
-      <a href="#" className="ant-dropdown-link">
-        More actions <Icon type="down"/>
-      </a>
-    </span>
-    ),
-}];
-
-const data = [{
-    key: '1',
-    name: '用户',
-    age: 32,
-    address: '欢迎来到用户页面',
+    title: '上次登陆时间',
+    dataIndex: 'login_time',
+    key: 'login_time',
+}, {
+    title: '注册时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
 }];
 
 class UserPage extends Component {
@@ -59,11 +47,37 @@ class UserPage extends Component {
         this.state = {
             modalText: 'Content of the modal dialog',
             modalVisible: false,
-            confirmLoading: false
+            confirmLoading: false,
+            newsData: []
         };
         this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
         this.handleCancle = this.handleCancle.bind(this);
+        this.getUserList = this.getUserList.bind(this);
+        this.getUserList();
+    }
+
+    getUserList() {
+        fetch(Urls.baseUrl + 'users/getall',
+            {
+                method: 'GET',
+                //credentials: 'include'
+            })
+            .then((result) => {
+                return result.json();
+            })
+            .then((resultData) => {
+                console.log(resultData);
+                if (resultData.status === 1) {
+                    this.setState({
+                        newsData: resultData.users
+                    });
+                    console.log(resultData.users)
+                }
+            })
+            .catch((error) => {
+                console.log('error:' + error.toString());
+            });
     }
 
     openAlert() {
@@ -131,7 +145,7 @@ class UserPage extends Component {
                         marginRight: 15
                     }} onClick={this.openAlert}>发布</Button>
                 </div>
-                <Table columns={columns} dataSource={data} className="NewsTable"/>
+                <Table columns={columns} dataSource={this.state.newsData} className="NewsTable"/>
                 <Modal title="新闻操作"
                        visible={this.state.modalVisible}
                        onOk={this.handleOK}

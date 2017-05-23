@@ -3,7 +3,7 @@ import './stylesheet/App.css';
 import {Layout, Menu, Breadcrumb, Icon, Button} from 'antd';
 import {connect} from 'react-redux';
 const {SubMenu} = Menu;
-import { Link } from 'react-router';
+import {Link} from 'react-router';
 const {Header, Content, Sider} = Layout;
 const ButtonGroup = Button.Group;
 import manageIcon from './image/icon_manage.png';
@@ -21,7 +21,11 @@ class App extends Component {
     }
 
     getUserMessage(userphone) {
-        fetch(Urls.baseUrl + 'sys/users/getbyphone/' + userphone, {method: 'GET', credentials: 'include'})
+        fetch(Urls.baseUrl + 'sys/users/getbyphone/' + userphone,
+            {
+                method: 'GET',
+                //credentials: 'include'
+            })
             .then((result) => {
                 return result.json();
             })

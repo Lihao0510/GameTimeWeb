@@ -8,50 +8,47 @@
  * Created by Lihao on 2017/5/8.
  */
 import React, {Component} from 'react';
+import moment from 'moment';
 import '../stylesheet/NewsPage.css';
 import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
 import NewsInput from '../component/NewsInput';
-import {openWindow} from '../redux/action/InputWindowAction'
+import {openWindow} from '../redux/action/InputWindowAction';
+import Urls from '../util/UrlList';
 notification.config({
     placement: 'bottomRight',
 });
 
 const columns = [{
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    title: '帖子标题',
+    dataIndex: 'post_title',
+    key: 'post_title',
     render: text => <a href="#">{text}</a>,
 }, {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: '发帖人',
+    dataIndex: 'post_man',
+    key: 'post_man',
 }, {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: '帖子类型',
+    dataIndex: 'post_type',
+    key: 'post_type',
 }, {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-        <span>
-      <a href="#">Action 一 {record.name}</a>
-      <span className="ant-divider"/>
-      <a href="#">Delete</a>
-      <span className="ant-divider"/>
-      <a href="#" className="ant-dropdown-link">
-        More actions <Icon type="down"/>
-      </a>
-    </span>
-    ),
+}, {
+    title: '阅读数',
+    dataIndex: 'post_reader',
+    key: 'post_reader',
+}, {
+}, {
+    title: '回帖数',
+    dataIndex: 'post_replyed',
+    key: 'post_replyed',
+}, {
+    title: '发帖时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
 }];
 
-const data = [{
-    key: '1',
-    name: 'ForumPage',
-    age: 32,
-    address: '欢迎来到论坛页面',
-}];
+
 
 class ForumPage extends Component {
     constructor(props) {
@@ -59,11 +56,51 @@ class ForumPage extends Component {
         this.state = {
             modalText: 'Content of the modal dialog',
             modalVisible: false,
-            confirmLoading: false
-        }
+            confirmLoading: false,
+            postData: []
+        };
         this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
         this.handleCancle = this.handleCancle.bind(this);
+        this.getPostList = this.getPostList.bind(this);
+        this.getPostList();
+    }
+
+    getPostList() {
+        fetch(Urls.baseUrl + 'forum/getlatest',
+            {
+                method: 'GET',
+                //credentials: 'include'
+            })
+            .then((result) => {
+                return result.json();
+            })
+            .then((resultData) => {
+                console.log(resultData);
+                if (resultData.status === 1) {
+                    let resultArr = resultData.posts.map((data, key) => {
+                        return {
+                            /*post_title: data.post_title,
+                             post_man: data.post_man.user_phone,
+                             post_type: data.post_type,
+                             post_reader: data.post_reader,
+                             post_replyed: data.post_replyed,
+                             create_time: data.create_time,*/
+                            //使用对象的分解
+                            ...data,
+                            post_man: data.post_man.user_phone,
+                            create_time: moment(data.create_time).format('YYYY-MM-DD HH:mm')
+                        }
+                    });
+                    this.setState({
+                        postData: resultArr
+                    });
+                    console.log(resultData.posts)
+                }
+            })
+            .catch((error) => {
+                console.log('error:' + error.toString());
+            });
     }
 
     openAlert() {
@@ -131,7 +168,7 @@ class ForumPage extends Component {
                         marginRight: 15
                     }} onClick={this.openAlert}>发布</Button>
                 </div>
-                <Table columns={columns} dataSource={data} className="NewsTable"/>
+                <Table columns={columns} dataSource={this.state.postData} className="NewsTable"/>
                 <Modal title="新闻操作"
                        visible={this.state.modalVisible}
                        onOk={this.handleOK}

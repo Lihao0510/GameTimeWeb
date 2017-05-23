@@ -35,7 +35,7 @@ class NewsInput extends Component {
             fetch(Urls.baseUrl + 'news/weixin/create',
                 {
                     method: 'POST',
-                    credentials: 'include',
+                    //credentials: 'include',
                     headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
                     body: JSON.stringify(values)
                 })
@@ -75,7 +75,7 @@ class NewsInput extends Component {
                     });
                 });
         });
-    }
+    };
 
     constructor(props) {
         super(props);

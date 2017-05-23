@@ -6,138 +6,73 @@ import '../stylesheet/NewsPage.css';
 import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
 import NewsInput from '../component/NewsInput';
-import {openWindow} from '../redux/action/InputWindowAction'
+import {openWindow} from '../redux/action/InputWindowAction';
+import Urls from '../util/UrlList';
 notification.config({
     placement: 'bottomRight',
 });
 
 const columns = [{
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    title: '新闻标题',
+    dataIndex: 'news_title',
+    key: 'news_title',
     render: text => <a href="#">{text}</a>,
 }, {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: '新闻来源',
+    dataIndex: 'news_from',
+    key: 'news_from',
 }, {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: '图片地址',
+    dataIndex: 'news_pic',
+    key: 'news_pic',
 }, {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-        <span>
-      <a href="#">Action 一 {record.name}</a>
-      <span className="ant-divider"/>
-      <a href="#">Delete</a>
-      <span className="ant-divider"/>
-      <a href="#" className="ant-dropdown-link">
-        More actions <Icon type="down"/>
-      </a>
-    </span>
-    ),
-}];
-
-const data = [{
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
+    title: '新闻地址',
+    dataIndex: 'news_url',
+    key: 'news_url',
 }, {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-}, {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '4',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '5',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '6',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '7',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '8',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '9',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '10',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '11',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '12',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '13',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '14',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '15',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '16',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-}, {
-    key: '17',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
 }];
 
 class NewsPage extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             modalText: 'Content of the modal dialog',
             modalVisible: false,
-            confirmLoading: false
-        }
+            confirmLoading: false,
+            newsData: []
+        };
         this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
         this.handleCancle = this.handleCancle.bind(this);
+        this.getNewsList = this.getNewsList.bind(this);
+        this.getNewsList();
+    }
+
+    getNewsList() {
+        fetch(Urls.baseUrl + 'news/weixin/getallnews',
+            {
+                method: 'GET',
+                //credentials: 'include'
+            })
+            .then((result) => {
+                return result.json();
+            })
+            .then((resultData) => {
+                console.log(resultData);
+                if (resultData.status === 1) {
+                    this.setState({
+                        newsData: resultData.news
+                    })
+                    console.log(resultData.news)
+                }
+            })
+            .catch((error) => {
+                console.log('error:' + error.toString());
+            });
     }
 
     openAlert() {
@@ -177,7 +112,7 @@ class NewsPage extends Component {
                     <Button
                         type="primary"
                         style={{
-                            marginRight: 15
+                            marginRight: 15,
                         }}
                         onClick={this.props.openWindow}
                     >
@@ -205,7 +140,7 @@ class NewsPage extends Component {
                         marginRight: 15
                     }} onClick={this.openAlert}>发布</Button>
                 </div>
-                <Table columns={columns} dataSource={data} style={{ height: '100%'}}/>
+                <Table columns={columns} dataSource={this.state.newsData} style={{height: '100%'}}/>
                 <Modal title="新闻操作"
                        visible={this.state.modalVisible}
                        onOk={this.handleOK}
