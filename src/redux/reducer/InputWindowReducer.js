@@ -11,18 +11,15 @@ const inputWindowReducer = (state = closeWindow(), action) => {
                 ...state,
                 showWindow: true
             };
-            break;
         case CLOSE_WINDOW:
             return {
                 ...state,
                 showWindow: false
             };
-            break;
         default:
             return {
                 ...state
             };
-            break;
     }
 };
 

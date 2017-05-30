@@ -3,5 +3,11 @@
  */
 import {combineReducers} from 'redux';
 import inputWindowReducer from './InputWindowReducer'
+import manageAppUserReducer from './ManageAppUserReducer'
+import manageSysUserReducer from './ManageSysUserReducer'
 
-export default combineReducers({inputWindowReducer});
+export default combineReducers({
+    inputWindowReducer,
+    manageAppUserReducer,
+    manageSysUserReducer
+});

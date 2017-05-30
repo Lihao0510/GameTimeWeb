@@ -8,7 +8,8 @@ import App from './App';
 import Page from './Page';
 import NewsPage from './page/NewsPage';
 import ForumPage from './page/ForumPage';
-import UserPage from './page/UserPage';
+import SysUserPage from './page/SysUserPage';
+import AppUserPage from './page/AppUserPage';
 import SystemPage from './page/SystemPage';
 
 class RootRoute extends Component {
@@ -25,9 +26,9 @@ class RootRoute extends Component {
                         <Route path={'forum/dota'} component={ForumPage}/>
                         <Route path={'forum/stone'} component={ForumPage}/>
                         <Route path={'forum/nongyao'} component={ForumPage}/>
-                        <Route path={'user/sys'} component={UserPage}/>
-                        <Route path={'user/app'} component={UserPage}/>
-                        <Route path={'user/authority'} component={UserPage}/>
+                        <Route path={'user/sys'} component={SysUserPage}/>
+                        <Route path={'user/app'} component={AppUserPage}/>
+                        <Route path={'user/authority'} component={AppUserPage}/>
                         <Route path={'system/crawler'} component={SystemPage}/>
                         <Route path={'system/plate'} component={SystemPage}/>
                         <Route path={'system/mail'} component={SystemPage}/>

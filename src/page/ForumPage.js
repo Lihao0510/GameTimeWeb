@@ -76,7 +76,6 @@ class ForumPage extends Component {
                 return result.json();
             })
             .then((resultData) => {
-                console.log(resultData);
                 if (resultData.status === 1) {
                     let resultArr = resultData.posts.map((data, key) => {
                         return {
@@ -95,7 +94,6 @@ class ForumPage extends Component {
                     this.setState({
                         postData: resultArr
                     });
-                    console.log(resultData.posts)
                 }
             })
             .catch((error) => {

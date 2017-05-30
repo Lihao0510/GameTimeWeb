@@ -1,45 +1,28 @@
 /**
  * Created by lihao on 2017/5/10.
  */
-/**
- * Created by lihao on 2017/5/10.
- */
-/**
- * Created by Lihao on 2017/5/8.
- */
+
 import React, {Component} from 'react';
 import '../stylesheet/NewsPage.css';
 import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
 import NewsInput from '../component/NewsInput';
 import {openWindow} from '../redux/action/InputWindowAction';
-import Urls from '../util/UrlList';
+import {FETCH_START, FETCH_SUCCESS, FETCH_ERROR, fetchAllSysUser} from '../redux/action/ManageSysUserAction';
+const {Column} = Table;
 
 notification.config({
     placement: 'bottomRight',
 });
 
-const columns = [{
-    title: '用户ID',
-    dataIndex: 'user_id',
-    key: 'user_id',
-}, {
-    title: '用户手机',
-    dataIndex: 'user_phone',
-    key: 'user_phone',
-}, {
-    title: '用户等级',
-    dataIndex: 'user_type',
-    key: 'user_type',
-}, {
-    title: '上次登陆时间',
-    dataIndex: 'login_time',
-    key: 'login_time',
-}, {
-    title: '注册时间',
-    dataIndex: 'create_time',
-    key: 'create_time',
-}];
+const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: record => ({
+        disabled: record.name === 'Disabled User',    // Column configuration not to be checked
+    }),
+};
 
 class UserPage extends Component {
     constructor(props) {
@@ -53,31 +36,10 @@ class UserPage extends Component {
         this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
         this.handleCancle = this.handleCancle.bind(this);
-        this.getUserList = this.getUserList.bind(this);
-        this.getUserList();
     }
 
-    getUserList() {
-        fetch(Urls.baseUrl + 'users/getall',
-            {
-                method: 'GET',
-                //credentials: 'include'
-            })
-            .then((result) => {
-                return result.json();
-            })
-            .then((resultData) => {
-                console.log(resultData);
-                if (resultData.status === 1) {
-                    this.setState({
-                        newsData: resultData.users
-                    });
-                    console.log(resultData.users)
-                }
-            })
-            .catch((error) => {
-                console.log('error:' + error.toString());
-            });
+    componentDidMount() {
+        this.props.fetchSysUser();
     }
 
     openAlert() {
@@ -111,6 +73,7 @@ class UserPage extends Component {
     }
 
     render() {
+        console.log(this.props.users);
         return (
             <Layout className="NewsPageLayout" style={{background: '#fff', padding: 12, height: '100%'}}>
                 <div className="NewsPageButtonContainer">
@@ -119,33 +82,70 @@ class UserPage extends Component {
                         style={{
                             marginRight: 15
                         }}
-                        onClick={this.props.openWindow}
-                    >
-                        新建
-                    </Button>
-                    <Button
-                        type="primary"
-                        style={{
-                            marginRight: 15
-                        }}
                         onClick={this.openAlert}
                     >
-                        删除
+                        停用
                     </Button>
                     <Button type="primary" style={{
                         marginRight: 15
-                    }} onClick={this.props.openWindow}>详情</Button>
+                    }} onClick={this.props.openWindow}>启用</Button>
                     <Button type="primary" style={{
                         marginRight: 15
-                    }} onClick={this.props.openWindow}>修改</Button>
-                    <Button type="primary" style={{
-                        marginRight: 15
-                    }} onClick={this.openAlert}>撤销</Button>
-                    <Button type="primary" style={{
-                        marginRight: 15
-                    }} onClick={this.openAlert}>发布</Button>
+                    }} onClick={this.props.openWindow}>查看</Button>
                 </div>
-                <Table columns={columns} dataSource={this.state.newsData} className="NewsTable"/>
+                <Table
+                    dataSource={this.props.users}
+                    className="NewsTable"
+                    bordered
+                    rowSelection={rowSelection}
+                >
+                    <Column
+                        title="编号"
+                        dataIndex="key"
+                        key="key"
+                        style={{
+                            width: 50
+                        }}
+                        className="td-num"
+                    />
+                    <Column
+                        title="用户ID"
+                        dataIndex="user_id"
+                        key="user_id"
+                    />
+                    <Column
+                        title="用户手机"
+                        dataIndex="user_phone"
+                        key="user_phone"
+                        style={{
+                            width: 100
+                        }}
+                    />
+                    <Column
+                        title="用户等级"
+                        dataIndex="user_type"
+                        key="user_type"
+                        style={{
+                            width: 50
+                        }}
+                    />
+                    <Column
+                        title="用户邮箱"
+                        dataIndex="user_email"
+                        key="user_email"
+                        style={{
+                            width: 120
+                        }}
+                    />
+                    <Column
+                        title="注册时间"
+                        dataIndex="create_time"
+                        key="create_time"
+                        style={{
+                            width: 120
+                        }}
+                    />
+                </Table>
                 <Modal title="新闻操作"
                        visible={this.state.modalVisible}
                        onOk={this.handleOK}
@@ -164,13 +164,16 @@ class UserPage extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {};
+    return {
+        users: state.manageSysUserReducer.users,
+        status: state.manageSysUserReducer.status,
+    };
 };
 
 const mapFuncToProps = (dispatch, ownProps) => {
     return {
-        openWindow: () => {
-            dispatch(openWindow())
+        fetchSysUser: () => {
+            dispatch(fetchAllSysUser())
         }
     };
 };

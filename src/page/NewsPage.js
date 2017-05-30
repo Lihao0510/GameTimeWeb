@@ -2,38 +2,60 @@
  * Created by Lihao on 2017/5/8.
  */
 import React, {Component} from 'react';
+import moment from 'moment';
 import '../stylesheet/NewsPage.css';
 import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
 import NewsInput from '../component/NewsInput';
 import {openWindow} from '../redux/action/InputWindowAction';
 import Urls from '../util/UrlList';
+
+const {Column} = Table;
 notification.config({
     placement: 'bottomRight',
 });
 
 const columns = [{
+    title: '编号',
+    dataIndex: 'key',
+    key: 'key',
+    width: 50,
+}, {
     title: '新闻标题',
     dataIndex: 'news_title',
     key: 'news_title',
-    render: text => <a href="#">{text}</a>,
 }, {
     title: '新闻来源',
     dataIndex: 'news_from',
     key: 'news_from',
+    width: 100,
 }, {
     title: '图片地址',
     dataIndex: 'news_pic',
     key: 'news_pic',
+    width: 100,
+    render: text => <a href={text} target="view_window">点击查看图片</a>,
 }, {
     title: '新闻地址',
     dataIndex: 'news_url',
     key: 'news_url',
+    width: 100,
+    render: text => <a href={text} target="view_window">点击查看新闻</a>,
 }, {
     title: '创建时间',
     dataIndex: 'create_time',
     key: 'create_time',
+    width: 120,
 }];
+
+const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: record => ({
+        disabled: record.name === 'Disabled User',    // Column configuration not to be checked
+    }),
+};
 
 class NewsPage extends Component {
 
@@ -62,12 +84,17 @@ class NewsPage extends Component {
                 return result.json();
             })
             .then((resultData) => {
-                console.log(resultData);
                 if (resultData.status === 1) {
+                    let resultArr = resultData.news.map((data, key) => {
+                        return {
+                            ...data,
+                            key: ++key,
+                            create_time: moment(data.create_time).format('YYYY-MM-DD HH:mm')
+                        }
+                    });
                     this.setState({
-                        newsData: resultData.news
-                    })
-                    console.log(resultData.news)
+                        newsData: resultArr
+                    });
                 }
             })
             .catch((error) => {
@@ -140,7 +167,69 @@ class NewsPage extends Component {
                         marginRight: 15
                     }} onClick={this.openAlert}>发布</Button>
                 </div>
-                <Table columns={columns} dataSource={this.state.newsData} style={{height: '100%'}}/>
+                <Table
+                    rowSelection={rowSelection}
+                    bordered
+                    dataSource={this.state.newsData}
+                    style={{height: '100%'}}
+                >
+                    <Column
+                        title="编号"
+                        dataIndex="key"
+                        key="key"
+                        style={{
+                            width: 50
+                        }}
+                        className="td-num"
+                    />
+                    <Column
+                        title="新闻标题"
+                        dataIndex="news_title"
+                        key="news_title"
+                    />
+                    <Column
+                        title="新闻来源"
+                        dataIndex="news_from"
+                        key="news_from"
+                        style={{
+                            width: 100
+                        }}
+                    />
+                    <Column
+                        title="图片地址"
+                        dataIndex="news_pic"
+                        key="news_pic"
+                        style={{
+                            width: 100
+                        }}
+                        render={(text) => {
+                            return (
+                                <a href={text} target="view_window">点击查看图片</a>
+                            )
+                        }}
+                    />
+                    <Column
+                        title="新闻地址"
+                        dataIndex="news_url"
+                        key="news_url"
+                        style={{
+                            width: 100
+                        }}
+                        render={(text) => {
+                            return (
+                                <a href={text} target="view_window">点击查看新闻</a>
+                            )
+                        }}
+                    />
+                    <Column
+                        title="创建时间"
+                        dataIndex="create_time"
+                        key="create_time"
+                        style={{
+                            width: 120
+                        }}
+                    />
+                </Table>
                 <Modal title="新闻操作"
                        visible={this.state.modalVisible}
                        onOk={this.handleOK}
