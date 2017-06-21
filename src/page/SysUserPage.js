@@ -15,14 +15,6 @@ notification.config({
     placement: 'bottomRight',
 });
 
-const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-    },
-    getCheckboxProps: record => ({
-        disabled: record.name === 'Disabled User',    // Column configuration not to be checked
-    }),
-};
 
 class UserPage extends Component {
     constructor(props) {
@@ -31,7 +23,10 @@ class UserPage extends Component {
             modalText: 'Content of the modal dialog',
             modalVisible: false,
             confirmLoading: false,
-            newsData: []
+            newsData: [],
+            selectedUser: {},
+            selectedNum: 0,
+            stopModalVisible: false
         };
         this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
@@ -74,6 +69,25 @@ class UserPage extends Component {
 
     render() {
         console.log(this.props.users);
+        const rowSelection = {
+            onChange: (selectedRowKeys, selectedRows) => {
+                console.log(`selectedRowKeys: ${selectedRowKeys.length}`);
+                if (selectedRowKeys.length == 1) {
+                    this.setState({
+                        selectedUser: selectedRows[0],
+                        selectedNum: 1
+                    })
+                } else {
+                    this.setState({
+                        selectedUser: {},
+                        selectedNum: selectedRowKeys.length
+                    })
+                }
+            },
+            getCheckboxProps: record => ({
+                disabled: record.name === 'Disabled User',    // Column configuration not to be checked
+            }),
+        };
         return (
             <Layout className="NewsPageLayout" style={{background: '#fff', padding: 12, height: '100%'}}>
                 <div className="NewsPageButtonContainer">
@@ -82,16 +96,36 @@ class UserPage extends Component {
                         style={{
                             marginRight: 15
                         }}
-                        onClick={this.openAlert}
+                        onClick={() => {
+                            this.setState({
+                                stopModalVisible: true,
+
+                            })
+                        }}
+                        disabled={this.state.selectedNum === 0}
                     >
                         停用
                     </Button>
-                    <Button type="primary" style={{
-                        marginRight: 15
-                    }} onClick={this.props.openWindow}>启用</Button>
-                    <Button type="primary" style={{
-                        marginRight: 15
-                    }} onClick={this.props.openWindow}>查看</Button>
+                    <Button
+                        type="primary"
+                        style={{
+                            marginRight: 15
+                        }}
+                        onClick={this.props.openWindow}
+                        disabled={this.state.selectedNum === 0}
+                    >
+                        启用
+                    </Button>
+                    <Button
+                        type="primary"
+                        style={{
+                            marginRight: 15
+                        }}
+                        onClick={this.props.openWindow}
+                        disabled={this.state.selectedNum !== 1}
+                    >
+                        查看
+                    </Button>
                 </div>
                 <Table
                     dataSource={this.props.users}
@@ -146,13 +180,23 @@ class UserPage extends Component {
                         }}
                     />
                 </Table>
-                <Modal title="新闻操作"
-                       visible={this.state.modalVisible}
-                       onOk={this.handleOK}
-                       confirmLoading={this.state.confirmLoading}
-                       onCancel={this.handleCancle}
+                <Modal
+                    title="新闻操作"
+                    visible={this.state.modalVisible}
+                    onOk={this.handleOK}
+                    confirmLoading={this.state.confirmLoading}
+                    onCancel={this.handleCancle}
                 >
                     <p>      {this.state.modalText}</p>
+                </Modal>
+                <Modal
+                    title="停用系统用户"
+                    visible={this.state.stopModalVisible}
+                    onOk={this.handleOK}
+                    confirmLoading={this.state.confirmLoading}
+                    onCancel={this.handleCancle}
+                >
+                    <p>      是否停用选中用户?</p>
                 </Modal>
                 <NewsInput
                     visible={this.state.modalVisible}

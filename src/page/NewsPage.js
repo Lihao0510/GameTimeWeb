@@ -8,45 +8,13 @@ import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
 import NewsInput from '../component/NewsInput';
 import {openWindow} from '../redux/action/InputWindowAction';
+import {fetchWeixinNews} from '../redux/action/WeixinNewsAction';
 import Urls from '../util/UrlList';
 
 const {Column} = Table;
 notification.config({
     placement: 'bottomRight',
 });
-
-const columns = [{
-    title: '编号',
-    dataIndex: 'key',
-    key: 'key',
-    width: 50,
-}, {
-    title: '新闻标题',
-    dataIndex: 'news_title',
-    key: 'news_title',
-}, {
-    title: '新闻来源',
-    dataIndex: 'news_from',
-    key: 'news_from',
-    width: 100,
-}, {
-    title: '图片地址',
-    dataIndex: 'news_pic',
-    key: 'news_pic',
-    width: 100,
-    render: text => <a href={text} target="view_window">点击查看图片</a>,
-}, {
-    title: '新闻地址',
-    dataIndex: 'news_url',
-    key: 'news_url',
-    width: 100,
-    render: text => <a href={text} target="view_window">点击查看新闻</a>,
-}, {
-    title: '创建时间',
-    dataIndex: 'create_time',
-    key: 'create_time',
-    width: 120,
-}];
 
 const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -64,42 +32,20 @@ class NewsPage extends Component {
         this.state = {
             modalText: 'Content of the modal dialog',
             modalVisible: false,
-            confirmLoading: false,
-            newsData: []
+            confirmLoading: false
         };
         this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
         this.handleCancle = this.handleCancle.bind(this);
         this.getNewsList = this.getNewsList.bind(this);
+    }
+
+    componentDidMount() {
         this.getNewsList();
     }
 
     getNewsList() {
-        fetch(Urls.baseUrl + 'news/weixin/getallnews',
-            {
-                method: 'GET',
-                //credentials: 'include'
-            })
-            .then((result) => {
-                return result.json();
-            })
-            .then((resultData) => {
-                if (resultData.status === 1) {
-                    let resultArr = resultData.news.map((data, key) => {
-                        return {
-                            ...data,
-                            key: ++key,
-                            create_time: moment(data.create_time).format('YYYY-MM-DD HH:mm')
-                        }
-                    });
-                    this.setState({
-                        newsData: resultArr
-                    });
-                }
-            })
-            .catch((error) => {
-                console.log('error:' + error.toString());
-            });
+        this.props.getWeixinNews();
     }
 
     openAlert() {
@@ -170,7 +116,7 @@ class NewsPage extends Component {
                 <Table
                     rowSelection={rowSelection}
                     bordered
-                    dataSource={this.state.newsData}
+                    dataSource={this.props.weixinNews}
                     style={{height: '100%'}}
                 >
                     <Column
@@ -248,13 +194,20 @@ class NewsPage extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {};
+    return {
+        fetchStatus: state.fetchWeixinNewsReducer.status,
+        weixinNews: state.fetchWeixinNewsReducer.news
+    };
 };
 
 const mapFuncToProps = (dispatch, ownProps) => {
     return {
         openWindow: () => {
             dispatch(openWindow())
+        },
+
+        getWeixinNews: () => {
+            dispatch(fetchWeixinNews())
         }
     };
 };
