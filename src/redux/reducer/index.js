@@ -5,6 +5,7 @@ import {combineReducers} from 'redux';
 import inputWindowReducer from './InputWindowReducer';
 import manageAppUserReducer from './ManageAppUserReducer';
 import manageSysUserReducer from './ManageSysUserReducer';
+import {detailWindowReducer, fetchSysUserDetailReducer} from './DetailPageReducer';
 import {addWeixinNewsReducer, fetchWeixinNewsReducer} from './WeixinNewsReducer';
 
 export default combineReducers({
@@ -12,5 +13,7 @@ export default combineReducers({
     manageAppUserReducer,
     manageSysUserReducer,
     addWeixinNewsReducer,
-    fetchWeixinNewsReducer
+    fetchWeixinNewsReducer,
+    detailWindowReducer,
+    fetchSysUserDetailReducer
 });

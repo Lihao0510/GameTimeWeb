@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import {closeWindow} from '../redux/action/InputWindowAction';
 import Urls from '../util/UrlList';
 const FormItem = Form.Item;
+
 notification.config({
     placement: 'bottomRight',
 });

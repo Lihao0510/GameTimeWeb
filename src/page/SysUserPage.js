@@ -6,10 +6,15 @@ import React, {Component} from 'react';
 import '../stylesheet/NewsPage.css';
 import {connect} from 'react-redux';
 import {Layout, Table, Icon, Button, Modal, notification} from 'antd';
-import NewsInput from '../component/NewsInput';
-import {openWindow} from '../redux/action/InputWindowAction';
-import {FETCH_START, FETCH_SUCCESS, FETCH_ERROR, fetchAllSysUser} from '../redux/action/ManageSysUserAction';
+import UserDetail from '../component/UserDetail';
+import {fetchAllSysUser, changeSysUserLevel} from '../redux/action/ManageSysUserAction';
+import {openWindow, fetchSysUserAuthMessage} from '../redux/action/DetailPageAction';
 const {Column} = Table;
+
+const STOP_USER = 'stop_user';
+const START_USER = 'start_user';
+const REVIEW_USER = 'review_user';
+const DELETE_USER = 'delete_user';
 
 notification.config({
     placement: 'bottomRight',
@@ -17,6 +22,7 @@ notification.config({
 
 
 class UserPage extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -26,25 +32,73 @@ class UserPage extends Component {
             newsData: [],
             selectedUser: {},
             selectedNum: 0,
-            stopModalVisible: false
+            modalType: STOP_USER
         };
-        this.openAlert = this.openAlert.bind(this);
         this.handleOK = this.handleOK.bind(this);
         this.handleCancle = this.handleCancle.bind(this);
+        this.onTopButtonGroupClick = this.onTopButtonGroupClick.bind(this);
+    }
+
+    onTopButtonGroupClick(buttonType) {
+        console.log('点击的按钮类型:' + buttonType);
+        switch (buttonType) {
+            case STOP_USER:
+                this.setState({
+                    modalVisible: true,
+                    modalText: '确定要停用选中用户吗?',
+                    modalType: buttonType
+                });
+                break;
+            case START_USER:
+                this.setState({
+                    modalVisible: true,
+                    modalText: '确定要启用选中用户吗?',
+                    modalType: buttonType
+                });
+                break;
+            case REVIEW_USER:
+                this.setState({
+                    modalVisible: true,
+                    modalText: '确定要停用选中用户吗?',
+                    modalType: buttonType
+                });
+                break;
+            case DELETE_USER:
+                this.setState({
+                    modalVisible: true,
+                    modalText: '确定要删除选中用户吗?',
+                    modalType: buttonType
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     componentDidMount() {
         this.props.fetchSysUser();
     }
 
-    openAlert() {
-        this.setState({
-            modalText: '是否删除该新闻?',
-            modalVisible: true,
-        });
-    }
 
     handleOK() {
+        let curAction = this.state.modalType;
+
+        switch (curAction) {
+            case STOP_USER:
+                let stopUserID = this.state.selectedUser.user_id;
+                this.props.closeOrOpenSysUser(stopUserID, -1);
+                break;
+            case START_USER:
+                let openUserID = this.state.selectedUser.user_id;
+                this.props.closeOrOpenSysUser(openUserID, 0);
+                break;
+            case DELETE_USER:
+
+                break;
+            default:
+                break;
+        }
+
         this.setState({
             modalText: '正在删除中',
             confirmLoading: true,
@@ -68,7 +122,6 @@ class UserPage extends Component {
     }
 
     render() {
-        console.log(this.props.users);
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
                 console.log(`selectedRowKeys: ${selectedRowKeys.length}`);
@@ -96,13 +149,12 @@ class UserPage extends Component {
                         style={{
                             marginRight: 15
                         }}
-                        onClick={() => {
-                            this.setState({
-                                stopModalVisible: true,
-
-                            })
-                        }}
-                        disabled={this.state.selectedNum === 0}
+                        onClick={
+                            () => {
+                                this.onTopButtonGroupClick(STOP_USER)
+                            }
+                        }
+                        disabled={this.state.selectedNum !== 1 && this.state.selectedUser.user_type !== -1}
                     >
                         停用
                     </Button>
@@ -111,8 +163,11 @@ class UserPage extends Component {
                         style={{
                             marginRight: 15
                         }}
-                        onClick={this.props.openWindow}
-                        disabled={this.state.selectedNum === 0}
+                        onClick={() => {
+                            this.onTopButtonGroupClick(START_USER)
+                        }
+                        }
+                        disabled={this.state.selectedNum !== 1}
                     >
                         启用
                     </Button>
@@ -121,10 +176,29 @@ class UserPage extends Component {
                         style={{
                             marginRight: 15
                         }}
-                        onClick={this.props.openWindow}
+                        onClick={
+                            () => {
+                                this.props.reviewUserDetail();
+                                this.props.getUserDetailByID(this.state.selectedUser.user_id)
+                            }
+                        }
                         disabled={this.state.selectedNum !== 1}
                     >
                         查看
+                    </Button>
+                    <Button
+                        type="danger"
+                        style={{
+                            marginRight: 15
+                        }}
+                        onClick={
+                            () => {
+                                this.onTopButtonGroupClick(DELETE_USER)
+                            }
+                        }
+                        disabled={this.state.selectedNum === 0}
+                    >
+                        删除
                     </Button>
                 </div>
                 <Table
@@ -143,11 +217,13 @@ class UserPage extends Component {
                         className="td-num"
                     />
                     <Column
+                        className="td-num"
                         title="用户ID"
                         dataIndex="user_id"
                         key="user_id"
                     />
                     <Column
+                        className="td-num"
                         title="用户手机"
                         dataIndex="user_phone"
                         key="user_phone"
@@ -156,6 +232,7 @@ class UserPage extends Component {
                         }}
                     />
                     <Column
+                        className="td-num"
                         title="用户等级"
                         dataIndex="user_type"
                         key="user_type"
@@ -181,26 +258,18 @@ class UserPage extends Component {
                     />
                 </Table>
                 <Modal
-                    title="新闻操作"
+                    title="系统用户操作"
                     visible={this.state.modalVisible}
                     onOk={this.handleOK}
                     confirmLoading={this.state.confirmLoading}
                     onCancel={this.handleCancle}
                 >
-                    <p>      {this.state.modalText}</p>
+                    <p>{this.state.modalText}</p>
                 </Modal>
-                <Modal
-                    title="停用系统用户"
-                    visible={this.state.stopModalVisible}
-                    onOk={this.handleOK}
-                    confirmLoading={this.state.confirmLoading}
-                    onCancel={this.handleCancle}
-                >
-                    <p>      是否停用选中用户?</p>
-                </Modal>
-                <NewsInput
-                    visible={this.state.modalVisible}
-                    title="新建新闻"
+                <UserDetail
+                    title="系统管理员详情"
+                    userID={this.state.selectedNum === 1 ? this.state.selectedUser.user_id + '' : ''}
+                    userType="SYSTEM"
                 />
             </Layout>
         )
@@ -218,6 +287,18 @@ const mapFuncToProps = (dispatch, ownProps) => {
     return {
         fetchSysUser: () => {
             dispatch(fetchAllSysUser())
+        },
+
+        reviewUserDetail: () => {
+            dispatch(openWindow())
+        },
+
+        getUserDetailByID: (userID) => {
+            dispatch(fetchSysUserAuthMessage(userID))
+        },
+
+        closeOrOpenSysUser: (userID, userLevel) => {
+            dispatch(changeSysUserLevel(userID, userLevel))
         }
     };
 };
