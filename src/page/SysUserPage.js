@@ -124,7 +124,6 @@ class UserPage extends Component {
     render() {
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
-                console.log(`selectedRowKeys: ${selectedRowKeys.length}`);
                 if (selectedRowKeys.length == 1) {
                     this.setState({
                         selectedUser: selectedRows[0],

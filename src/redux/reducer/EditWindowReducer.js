@@ -1,9 +1,9 @@
 /**
- * Created by Lihao on 2017/5/9.
+ * Created by lihao on 2017/6/25.
  */
-import {CLOSE_WINDOW, OPEN_WINDOW, closeWindow, openWindow} from '../action/InputWindowAction';
+import {CLOSE_WINDOW, OPEN_WINDOW, closeWindow} from '../action/EditWindowAction';
 
-const inputWindowReducer = (state = closeWindow(), action) => {
+const editWindowReducer = (state = closeWindow(), action) => {
 
     switch (action.type) {
         case OPEN_WINDOW:
@@ -25,4 +25,4 @@ const inputWindowReducer = (state = closeWindow(), action) => {
 
 
 
-export default inputWindowReducer;
+export default editWindowReducer;

@@ -1,8 +1,8 @@
 /**
- * Created by Lihao on 2017/5/9.
+ * Created by lihao on 2017/6/25.
  */
-export const CLOSE_WINDOW = 'INPUT/CLOSE_WINDOW';
-export const OPEN_WINDOW = 'INPUT/OPEN_WINDOW';
+export const CLOSE_WINDOW = 'EDIT/CLOSE_WINDOW';
+export const OPEN_WINDOW = 'EDIT/OPEN_WINDOW';
 
 export const closeWindow = () => {
     return ({

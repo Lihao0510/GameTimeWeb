@@ -4,18 +4,30 @@
 import React, {Component} from 'react';
 import {Router, Route, hashHistory, IndexRedirect} from 'react-router';
 
-import App from './App';
+//import App from './App';
 import Page from './Page';
-//import NewsPage from './page/NewsPage';
+//import NewsPage from './page/WeixinNewsPage';
 //import ForumPage from './page/ForumPage';
 //import SysUserPage from './page/SysUserPage';
 //import AppUserPage from './page/AppUserPage';
 //import SystemPage from './page/SystemPage';
 
-const getNewsPage = (location, callback) => {
+const getApp = (location, callback) => {
     require.ensure([], function (require) {
-        callback(null, require('./page/NewsPage').default)
-    }, 'newspage');
+        callback(null, require('./App').default)
+    }, 'app');
+};
+
+const getWeixinNewsPage = (location, callback) => {
+    require.ensure([], function (require) {
+        callback(null, require('./page/WeixinNewsPage').default)
+    }, 'weixin_news');
+};
+
+const getLocalNewsPage = (location, callback) => {
+    require.ensure([], function (require) {
+        callback(null, require('./page/LocalNewsPage').default)
+    }, 'local_news');
 };
 
 const getForumPage = (location, callback) => {
@@ -48,10 +60,10 @@ class RootRoute extends Component {
             <Router history={hashHistory}>
                 <Route path={'/'} components={Page}>
                     <IndexRedirect to="/app/news/weixin"/>
-                    <Route path={'app'} component={App}>
-                        <Route path={'news/weixin'} getComponent={getNewsPage}/>
-                        <Route path={'news/local'} getComponent={getNewsPage}/>
-                        <Route path={'news/picture'} getComponent={getNewsPage}/>
+                    <Route path={'app'} getComponent={getApp}>
+                        <Route path={'news/weixin'} getComponent={getWeixinNewsPage}/>
+                        <Route path={'news/local'} getComponent={getLocalNewsPage}/>
+                        <Route path={'news/picture'} getComponent={getWeixinNewsPage}/>
                         <Route path={'forum/lol'} getComponent={getForumPage}/>
                         <Route path={'forum/dota'} getComponent={getForumPage}/>
                         <Route path={'forum/stone'} getComponent={getForumPage}/>

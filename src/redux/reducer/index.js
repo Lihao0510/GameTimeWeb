@@ -3,10 +3,12 @@
  */
 import {combineReducers} from 'redux';
 import inputWindowReducer from './InputWindowReducer';
+import editWindowReducer from './EditWindowReducer';
 import manageAppUserReducer from './ManageAppUserReducer';
 import manageSysUserReducer from './ManageSysUserReducer';
 import {detailWindowReducer, fetchSysUserDetailReducer} from './DetailPageReducer';
 import {addWeixinNewsReducer, fetchWeixinNewsReducer} from './WeixinNewsReducer';
+import {addLocalNewsReducer, fetchLocalNewsReducer, deleteLocalNewsReducer} from './LocalNewsReducer';
 
 export default combineReducers({
     inputWindowReducer,
@@ -15,5 +17,9 @@ export default combineReducers({
     addWeixinNewsReducer,
     fetchWeixinNewsReducer,
     detailWindowReducer,
-    fetchSysUserDetailReducer
+    fetchSysUserDetailReducer,
+    editWindowReducer,
+    addLocalNewsReducer,
+    fetchLocalNewsReducer,
+    deleteLocalNewsReducer
 });
